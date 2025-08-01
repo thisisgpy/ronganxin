@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ganpengyu.ronganxin.dao.SysBankDao">
+  <resultMap id="BaseResultMap" type="com.ganpengyu.ronganxin.model.SysBank">
+    <!--@mbg.generated-->
+    <!--@Table sys_bank-->
+    <id column="code" property="code" />
+    <result column="name" property="name" />
+    <result column="name_abbr" property="nameAbbr" />
+    <result column="province" property="province" />
+    <result column="city" property="city" />
+    <result column="branch_name" property="branchName" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    code, `name`, name_abbr, province, city, branch_name
+  </sql>
+</mapper>
