@@ -8,7 +8,7 @@ import com.ganpengyu.ronganxin.common.util.CheckUtils;
 import com.ganpengyu.ronganxin.common.util.CodecUtils;
 import com.ganpengyu.ronganxin.dao.SysUserDao;
 import com.ganpengyu.ronganxin.model.SysUser;
-import com.ganpengyu.ronganxin.web.dto.*;
+import com.ganpengyu.ronganxin.web.dto.user.*;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import jakarta.annotation.Resource;
@@ -172,9 +172,7 @@ public class UserService {
      */
     public PageResult<SysUserDto> findUserPage(QueryUserDto queryUserDto) {
         // 1. 参数校验
-        if (queryUserDto == null) {
-            throw new RaxException("查询参数不能为空");
-        }
+        CheckUtils.check(null != queryUserDto, "查询参数不能为空");
 
         int pageNo = queryUserDto.getPageNo() <= 0 ? 1 : queryUserDto.getPageNo();
         int pageSize = queryUserDto.getPageSize() <= 0 ? 10 : queryUserDto.getPageSize();

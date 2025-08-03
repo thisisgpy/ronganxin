@@ -1,9 +1,9 @@
 package com.ganpengyu.ronganxin.beanmapper;
 
 import com.ganpengyu.ronganxin.model.SysUser;
-import com.ganpengyu.ronganxin.web.dto.CreateUserDto;
-import com.ganpengyu.ronganxin.web.dto.SysUserDto;
-import com.ganpengyu.ronganxin.web.dto.UpdateUserDto;
+import com.ganpengyu.ronganxin.web.dto.user.CreateUserDto;
+import com.ganpengyu.ronganxin.web.dto.user.SysUserDto;
+import com.ganpengyu.ronganxin.web.dto.user.UpdateUserDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.MappingTarget;

@@ -1,6 +1,10 @@
 package com.ganpengyu.ronganxin.model;
 
 import java.time.LocalDateTime;
+
+import com.mybatisflex.annotation.Id;
+import com.mybatisflex.annotation.KeyType;
+import com.mybatisflex.annotation.Table;
 import lombok.Data;
 
 /**
@@ -11,10 +15,13 @@ import lombok.Data;
  */
 
 @Data
+@Table(value = "sys_resource")
 public class SysResource {
+
     /**
     * 资源ID
     */
+    @Id(keyType = KeyType.Auto)
     private Long id;
 
     /**

@@ -1,4 +1,4 @@
-package com.ganpengyu.ronganxin.web.dto;
+package com.ganpengyu.ronganxin.web.dto.user;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
