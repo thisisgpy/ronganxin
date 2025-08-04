@@ -28,7 +28,6 @@ public class UpdateOrgDto {
     @Schema(name = "组织描述")
     private String comment;
 
-    @NotNull(message = "组织ID不能为空")
     @Min(value = 0, message = "组织父级ID不能小于0")
     @Schema(name = "组织父级ID")
     private Long parentId;

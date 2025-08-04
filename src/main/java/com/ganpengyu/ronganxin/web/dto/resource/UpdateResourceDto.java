@@ -1,7 +1,6 @@
 package com.ganpengyu.ronganxin.web.dto.resource;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
@@ -18,21 +17,17 @@ public class UpdateResourceDto {
     @Schema(name = "资源ID")
     private Long id;
 
-    @NotEmpty(message = "资源编码不能为空")
     @Length(max = 64, message = "资源编码不能超过64个字符")
     @Schema(name = "资源编码")
     private String code;
 
-    @NotEmpty(message = "资源名称不能为空")
     @Length(max = 64, message = "资源名称不能超过64个字符")
     @Schema(name = "资源名称")
     private String name;
 
-    @NotNull(message = "资源类型不能为空")
     @Schema(name = "资源类型. 0:目录, 1:菜单, 2:按钮")
     private Integer type;
 
-    @NotNull(message = "父级资源ID不能为空")
     @Schema(name = "父级资源ID. 0表示没有父级资源")
     private Long parentId;
 

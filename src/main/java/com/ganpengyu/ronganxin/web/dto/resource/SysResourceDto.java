@@ -3,6 +3,8 @@ package com.ganpengyu.ronganxin.web.dto.resource;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @author Pengyu Gan
  * CreateDate 2025/8/3
@@ -49,5 +51,8 @@ public class SysResourceDto {
 
     @Schema(name = "是否删除")
     private Boolean isDeleted;
+
+    @Schema(name = "子资源")
+    private List<SysResourceDto> children;
 
 }

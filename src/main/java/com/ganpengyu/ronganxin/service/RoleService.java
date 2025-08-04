@@ -211,7 +211,9 @@ public class RoleService {
     }
 
     private SysRole findSysRoleById(Long id) {
-        return sysRoleDao.selectOneById(id);
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("id", id).eq("is_deleted", false);
+        return sysRoleDao.selectOneByQuery(queryWrapper);
     }
 
 }

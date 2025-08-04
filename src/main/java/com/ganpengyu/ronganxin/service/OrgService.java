@@ -193,7 +193,9 @@ public class OrgService {
 
 
     public SysOrg findSysOrgById(Long id) {
-        return sysOrgDao.selectOneById(id);
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("id", id).eq("is_deleted", false);
+        return sysOrgDao.selectOneByQuery(queryWrapper);
     }
 
     public SysOrgDto findOrgDtoById(Long id) {
