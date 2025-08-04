@@ -1,21 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ganpengyu.ronganxin.dao.SysRoleDao">
-  <resultMap id="BaseResultMap" type="com.ganpengyu.ronganxin.model.SysRole">
-    <!--@mbg.generated-->
-    <!--@Table sys_role-->
-    <id column="id" property="id" />
-    <result column="code" property="code" />
-    <result column="name" property="name" />
-    <result column="comment" property="comment" />
-    <result column="is_deleted" property="isDeleted" />
-    <result column="create_time" property="createTime" />
-    <result column="create_by" property="createBy" />
-    <result column="update_time" property="updateTime" />
-    <result column="update_by" property="updateBy" />
-  </resultMap>
-  <sql id="Base_Column_List">
-    <!--@mbg.generated-->
-    id, code, `name`, `comment`, is_deleted, create_time, create_by, update_time, update_by
-  </sql>
+    <resultMap id="BaseResultMap" type="com.ganpengyu.ronganxin.model.SysRole">
+        <!--@mbg.generated-->
+        <!--@Table sys_role-->
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="name" property="name"/>
+        <result column="comment" property="comment"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_by" property="createBy"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="update_by" property="updateBy"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id, code, `name`, `comment`, is_deleted, create_time, create_by, update_time, update_by
+    </sql>
+
+    <select id="findRoleByUserId" resultMap="BaseResultMap">
+        SELECT r.id,
+               r.code,
+               r.`name`,
+               r.`comment`,
+               r.is_deleted,
+               r.create_time,
+               r.create_by,
+               r.update_time,
+               r.update_by
+        FROM sys_role AS r
+                 INNER JOIN
+             sys_user_role AS ur ON r.id = ur.role_id
+        WHERE ur.user_id = #{userId}
+          AND r.is_deleted = 0
+        ORDER BY r.id
+    </select>
 </mapper>

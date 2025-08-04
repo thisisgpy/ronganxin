@@ -175,7 +175,6 @@ public class RoleService {
         return pageResult;
     }
 
-
     /**
      * 根据ID查找系统角色DTO
      *
@@ -189,6 +188,23 @@ public class RoleService {
         CheckUtils.check(sysRole != null, "角色不存在");
         // 转换为DTO对象并返回
         return roleBeanMapper.toSysRoleDto(sysRole);
+    }
+
+    /**
+     * 根据用户ID查询角色信息
+     *
+     * @param userId 用户ID
+     * @return 角色信息列表，如果未找到则返回空列表
+     */
+    public List<SysRoleDto> findRoleByUserId(Long userId) {
+        // 查询用户关联的角色信息
+        List<SysRole> roles = sysRoleDao.findRoleByUserId(userId);
+        // 如果查询结果为空，则返回空列表
+        if (null == roles || roles.isEmpty()) {
+            return Collections.emptyList();
+        }
+        // 将角色实体转换为DTO对象并返回
+        return roleBeanMapper.toSysRoleDtoList(roles);
     }
 
 

@@ -172,6 +172,14 @@ public class ResourceService {
         return resourceBeanMapper.toSysResourceDto(sysResource);
     }
 
+    public List<SysResourceDto> findResourceByRoleId(Long roleId) {
+        List<SysResource> sysResources = sysResourceDao.findResourceByRoleId(roleId);
+        if (null == sysResources || sysResources.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return resourceBeanMapper.toSysResourceDtoList(sysResources);
+    }
+
     /**
      * 递归构建资源树结构
      */

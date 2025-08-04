@@ -1,5 +1,8 @@
 package com.ganpengyu.ronganxin.model;
 
+import com.mybatisflex.annotation.Id;
+import com.mybatisflex.annotation.KeyType;
+import com.mybatisflex.annotation.Table;
 import lombok.Data;
 
 /**
@@ -10,10 +13,12 @@ import lombok.Data;
  */
 
 @Data
+@Table("sys_role_resource")
 public class SysRoleResource {
     /**
     * 角色资源关系ID
     */
+    @Id(keyType = KeyType.Auto)
     private Long id;
 
     /**

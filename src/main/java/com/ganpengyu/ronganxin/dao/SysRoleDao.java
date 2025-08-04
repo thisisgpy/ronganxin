@@ -3,6 +3,8 @@ package com.ganpengyu.ronganxin.dao;
 import com.ganpengyu.ronganxin.model.SysRole;
 import com.mybatisflex.core.BaseMapper;
 
+import java.util.List;
+
 /**
  * 角色
  *
@@ -11,4 +13,7 @@ import com.mybatisflex.core.BaseMapper;
  */
 
 public interface SysRoleDao extends BaseMapper<SysRole> {
+
+    List<SysRole> findRoleByUserId(Long userId);
+
 }
