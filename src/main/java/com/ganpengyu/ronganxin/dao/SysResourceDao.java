@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface SysResourceDao extends BaseMapper<SysResource> {
 
-    List<String> findResourceCodesByUserId(Long userId);
+    List<SysResource> findResourceByUserId(Long userId);
 
     List<SysResource> findResourceByRoleId(Long roleId);
 

@@ -244,6 +244,17 @@ public class UserService {
         return userBeanMapper.toSysUserDto(sysUser);
     }
 
+    public SysUserDto login(String mobile, String password) {
+        String encryptPassword = CodecUtils.encryptPassword(password);
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("mobile", mobile)
+                .eq("password", encryptPassword)
+                .eq("status", 1);
+        SysUser sysUser = sysUserDao.selectOneByQuery(queryWrapper);
+        CheckUtils.check(sysUser != null, "账号或密码错误");
+        return userBeanMapper.toSysUserDto(sysUser);
+    }
+
 
     /**
      * 根据用户ID查找用户信息

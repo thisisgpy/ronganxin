@@ -162,4 +162,24 @@ public class ResourceController {
         return RaxResult.ok(resourceDtos);
     }
 
+    @Operation(summary = "获取用户菜单",
+            parameters = {
+                    @Parameter(name = "userId", description = "用户ID", required = true)
+            },
+            responses = {
+                    @ApiResponse(content = @Content(mediaType = "application/json",
+                            schema = @Schema(type = "RaxResult", properties = {
+                                    @StringToClassMapItem(key = "success", value = Boolean.class),
+                                    @StringToClassMapItem(key = "message", value = String.class),
+                                    @StringToClassMapItem(key = "data", value = List.class)
+                            })
+                    ))
+            }
+    )
+    @GetMapping(value = "/getMenu/{userId}")
+    public RaxResult<List<SysResourceDto>> getMenu(@PathVariable("userId") Long userId) {
+        List<SysResourceDto> menus = resourceService.findResourceByUserId(userId);
+        return RaxResult.ok(menus);
+    }
+
 }

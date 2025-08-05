@@ -162,9 +162,45 @@ public class ResourceService {
         for (SysResourceDto root : roots) {
             buildResourceTree(root, map);
         }
+        map.clear();
 
         return roots;
     }
+
+    /**
+     * 根据用户ID查询资源列表并构建成树形结构
+     *
+     * @param userId 用户ID
+     * @return 树形结构的资源列表，如果用户没有资源则返回空列表
+     */
+    public List<SysResourceDto> findResourceByUserId(Long userId) {
+        List<SysResource> resources = sysResourceDao.findResourceByUserId(userId);
+        if (null == resources || resources.isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<SysResourceDto> sysResourceDtoList = resourceBeanMapper.toSysResourceDtoList(resources);
+
+        Map<Long, List<SysResourceDto>> map = new HashMap<>();
+        List<SysResourceDto> roots = new ArrayList<>();
+
+        // 构建父子映射关系
+        for (SysResourceDto dto : sysResourceDtoList) {
+            Long parentId = dto.getParentId();
+            if (parentId == null || parentId.equals(0L)) {
+                roots.add(dto);
+            } else {
+                map.computeIfAbsent(parentId, k -> new ArrayList<>()).add(dto);
+            }
+        }
+
+        // 递归构建树形结构
+        for (SysResourceDto root : roots) {
+            buildResourceTree(root, map);
+        }
+        map.clear();
+        return roots;
+    }
+
 
     public SysResourceDto findSysResourceDtoById(Long id) {
         SysResource sysResource = this.findSysResourceById(id);

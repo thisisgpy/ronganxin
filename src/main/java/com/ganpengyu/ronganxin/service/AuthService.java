@@ -2,15 +2,13 @@ package com.ganpengyu.ronganxin.service;
 
 import com.ganpengyu.ronganxin.common.util.CheckUtils;
 import com.ganpengyu.ronganxin.dao.SysResourceDao;
-import com.ganpengyu.ronganxin.dao.SysRoleDao;
 import com.ganpengyu.ronganxin.dao.SysRoleResourceDao;
 import com.ganpengyu.ronganxin.dao.SysUserRoleDao;
-import com.ganpengyu.ronganxin.model.SysRole;
+import com.ganpengyu.ronganxin.model.SysResource;
 import com.ganpengyu.ronganxin.model.SysRoleResource;
 import com.ganpengyu.ronganxin.model.SysUserRole;
 import com.ganpengyu.ronganxin.web.dto.auth.AssignRoleResourceDto;
 import com.ganpengyu.ronganxin.web.dto.auth.AssignUserRoleDto;
-import com.ganpengyu.ronganxin.web.dto.role.SysRoleDto;
 import com.mybatisflex.core.query.QueryWrapper;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
@@ -18,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 认证授权服务
@@ -36,9 +35,6 @@ public class AuthService {
 
     @Resource
     private SysResourceDao sysResourceDao;
-
-    @Resource
-    private SysRoleDao sysRoleDao;
 
     /**
      * 为用户分配角色
@@ -106,16 +102,24 @@ public class AuthService {
      * @return 资源编码列表
      */
     public List<String> findResourceCodesByUserId(Long userId) {
-        return sysResourceDao.findResourceCodesByUserId(userId);
+        List<SysResource> resources = sysResourceDao.findResourceByUserId(userId);
+        return resources.stream().map(SysResource::getCode).collect(Collectors.toList());
     }
 
+    /**
+     * 检查用户是否具有指定资源的权限
+     *
+     * @param userId       用户ID
+     * @param resourceCode 资源编码
+     * @return 如果用户具有该资源权限则返回true，否则返回false
+     */
     public boolean hasPermission(Long userId, String resourceCode) {
         // TODO 这里需要接入缓存
+        // 获取用户拥有的所有资源编码列表
         List<String> resourceCodes = this.findResourceCodesByUserId(userId);
+        // 判断用户资源列表中是否包含指定的资源编码
         return resourceCodes.contains(resourceCode);
     }
-
-
 
 
 }
