@@ -32,3 +32,6 @@ springdoc:
     path: /api-ui
 app:
   defaultPwd: 8008208820
+  jwt:
+    secret: Jc^T9kN6bvBZH_Q3@PWU
+    expiration: 86400

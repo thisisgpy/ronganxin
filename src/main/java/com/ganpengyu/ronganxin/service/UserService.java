@@ -8,10 +8,13 @@ import com.ganpengyu.ronganxin.common.util.CheckUtils;
 import com.ganpengyu.ronganxin.common.util.CodecUtils;
 import com.ganpengyu.ronganxin.dao.SysUserDao;
 import com.ganpengyu.ronganxin.model.SysUser;
+import com.ganpengyu.ronganxin.web.dto.resource.SysResourceDto;
 import com.ganpengyu.ronganxin.web.dto.user.*;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import jakarta.annotation.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,11 +33,18 @@ import java.util.List;
 @Service
 public class UserService {
 
+    private static final Logger log = LoggerFactory.getLogger(UserService.class);
     @Resource
     private SysUserDao sysUserDao;
 
     @Resource
     private UserBeanMapper userBeanMapper;
+
+    @Resource
+    private JwtService jwtService;
+
+    @Resource
+    private ResourceService resourceService;
 
     @Value("${app.defaultPwd}")
     private String defaultPassword;
@@ -244,15 +254,39 @@ public class UserService {
         return userBeanMapper.toSysUserDto(sysUser);
     }
 
-    public SysUserDto login(String mobile, String password) {
+    /**
+     * 用户登录功能
+     *
+     * @param mobile   手机号码，不能为空
+     * @param password 密码，不能为空
+     * @return LoginUserDto 登录用户信息传输对象，包含用户信息、token和菜单资源
+     */
+    public LoginUserDto login(String mobile, String password) {
+        // 参数验证
+        CheckUtils.check(StringUtils.hasText(mobile), "手机号不能为空");
+        CheckUtils.check(StringUtils.hasText(password), "密码不能为空");
+
+        LoginUserDto loginUserDto = new LoginUserDto();
+
+        // 密码加密处理
         String encryptPassword = CodecUtils.encryptPassword(password);
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("mobile", mobile)
                 .eq("password", encryptPassword)
-                .eq("status", 1);
+                .eq("status", 1); // 建议使用常量替代硬编码
         SysUser sysUser = sysUserDao.selectOneByQuery(queryWrapper);
         CheckUtils.check(sysUser != null, "账号或密码错误");
-        return userBeanMapper.toSysUserDto(sysUser);
+
+        // 设置用户基本信息
+        loginUserDto.setUserInfo(userBeanMapper.toSysUserDto(sysUser));
+        String token = jwtService.createToken(sysUser.getId());
+        // TODO token 加入缓存
+        loginUserDto.setToken(token);
+
+        // 获取用户菜单资源
+        List<SysResourceDto> menus = resourceService.findResourceByUserId(sysUser.getId());
+        loginUserDto.setMenus(menus);
+        return loginUserDto;
     }
 
 
