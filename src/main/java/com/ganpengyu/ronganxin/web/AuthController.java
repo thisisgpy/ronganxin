@@ -1,0 +1,120 @@
+package com.ganpengyu.ronganxin.web;
+
+import com.ganpengyu.ronganxin.common.RaxResult;
+import com.ganpengyu.ronganxin.service.AuthService;
+import com.ganpengyu.ronganxin.service.UserService;
+import com.ganpengyu.ronganxin.web.dto.auth.AssignRoleResourceDto;
+import com.ganpengyu.ronganxin.web.dto.auth.AssignUserRoleDto;
+import com.ganpengyu.ronganxin.web.dto.auth.UserLoginDto;
+import com.ganpengyu.ronganxin.web.dto.user.LoginUserDto;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.StringToClassMapItem;
+
+
+@Tag(name = "认证接口")
+@RestController
+@RequestMapping("/api/v1/auth")
+public class AuthController {
+
+    private final AuthService authService;
+
+    private final UserService userService;
+
+    public AuthController(AuthService authService, UserService userService) {
+        this.authService = authService;
+        this.userService = userService;
+    }
+
+    @Operation(summary = "用户登录", parameters = {
+            @Parameter(name = "userLoginDto", schema = @Schema(implementation = UserLoginDto.class))
+
+    }, responses = {
+            @ApiResponse(content = @Content(mediaType = "application/json", schema = @Schema(type = "RaxResult", properties = {
+                    @StringToClassMapItem(key = "success", value = Boolean.class),
+                    @StringToClassMapItem(key = "message", value = String.class),
+                    @StringToClassMapItem(key = "data", value = LoginUserDto.class)
+            })))
+    })
+    @PostMapping("/login")
+    public RaxResult<LoginUserDto> login(@RequestBody @Valid UserLoginDto userLoginDto) {
+        return RaxResult.ok(userService.login(userLoginDto));
+    }
+
+    @Operation(summary = "用户退出登录", parameters = {
+            @Parameter(name = "userId", schema = @Schema(implementation = Long.class))
+    }, responses = {
+            @ApiResponse(content = @Content(mediaType = "application/json", schema = @Schema(type = "RaxResult", properties = {
+                    @StringToClassMapItem(key = "success", value = Boolean.class),
+                    @StringToClassMapItem(key = "message", value = String.class),
+                    @StringToClassMapItem(key = "data", value = Boolean.class)
+            })))
+    })
+    @GetMapping("/logout/{userId}")
+    public RaxResult<Boolean> logout(@PathVariable("userId") Long userId) {
+        boolean success = authService.logout(userId);
+        return RaxResult.ok(success);
+    }
+
+
+    @Operation(summary = "分配用户角色", parameters = {
+            @Parameter(name = "assignUserRoleDto", schema = @Schema(implementation = AssignUserRoleDto.class))
+    }, responses = {
+            @ApiResponse(content = @Content(mediaType = "application/json", schema = @Schema(type = "RaxResult", properties = {
+                    @StringToClassMapItem(key = "success", value = Boolean.class),
+                    @StringToClassMapItem(key = "message", value = String.class),
+                    @StringToClassMapItem(key = "data", value = Boolean.class)
+            })))
+    })
+    @PostMapping("/assignUserRole")
+    public RaxResult<Boolean> assignUserRole(@RequestBody @Valid AssignUserRoleDto assignUserRoleDto) {
+        authService.assignUserRole(assignUserRoleDto);
+        return RaxResult.ok(true);
+    }
+
+    @Operation(summary = "分配角色资源", parameters = {
+            @Parameter(name = "assignRoleResourceDto", schema = @Schema(implementation = AssignRoleResourceDto.class))
+    }, responses = {
+            @ApiResponse(content = @Content(mediaType = "application/json", schema = @Schema(type = "RaxResult", properties = {
+                    @StringToClassMapItem(key = "success", value = Boolean.class),
+                    @StringToClassMapItem(key = "message", value = String.class),
+                    @StringToClassMapItem(key = "data", value = Boolean.class)
+            })))
+    })
+    @PostMapping("/assignRoleResource")
+    public RaxResult<Boolean> assignRoleResource(@RequestBody @Valid AssignRoleResourceDto assignRoleResourceDto) {
+        authService.assignRoleResource(assignRoleResourceDto);
+        return RaxResult.ok(true);
+    }
+
+    @Operation(summary = "检查用户是否有资源权限", parameters = {
+            @Parameter(name = "userId", schema = @Schema(implementation = Long.class)),
+            @Parameter(name = "resourceCode", schema = @Schema(implementation = String.class))
+    }, responses = {
+            @ApiResponse(content = @Content(mediaType = "application/json", schema = @Schema(type = "RaxResult", properties = {
+                    @StringToClassMapItem(key = "success", value = Boolean.class),
+                    @StringToClassMapItem(key = "message", value = String.class),
+                    @StringToClassMapItem(key = "data", value = Boolean.class)
+            })))
+    })
+    @GetMapping("/hasPermission/{userId}/{resourceCode}")
+    public RaxResult<Boolean> hasPermission(@PathVariable("userId") Long userId, @PathVariable("resourceCode") String resourceCode) {
+        boolean hasPermission = authService.hasPermission(userId, resourceCode);
+        return RaxResult.ok(hasPermission);
+    }
+
+
+}

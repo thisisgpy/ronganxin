@@ -121,5 +121,16 @@ public class AuthService {
         return resourceCodes.contains(resourceCode);
     }
 
+    /**
+     * 退出登录
+     *
+     * @param userId 用户ID
+     * @return 退出成功返回true，失败返回false
+     */
+    public boolean logout(Long userId) {
+        // TODO 清除缓存中的 token
+        return true;
+    }
+
 
 }

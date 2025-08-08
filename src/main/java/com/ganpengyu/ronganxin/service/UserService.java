@@ -8,6 +8,7 @@ import com.ganpengyu.ronganxin.common.util.CheckUtils;
 import com.ganpengyu.ronganxin.common.util.CodecUtils;
 import com.ganpengyu.ronganxin.dao.SysUserDao;
 import com.ganpengyu.ronganxin.model.SysUser;
+import com.ganpengyu.ronganxin.web.dto.auth.UserLoginDto;
 import com.ganpengyu.ronganxin.web.dto.resource.SysResourceDto;
 import com.ganpengyu.ronganxin.web.dto.user.*;
 import com.mybatisflex.core.paginate.Page;
@@ -257,11 +258,13 @@ public class UserService {
     /**
      * 用户登录功能
      *
-     * @param mobile   手机号码，不能为空
-     * @param password 密码，不能为空
+     * @param userLoginDto 用户登录传输对象，包含手机号和密码
      * @return LoginUserDto 登录用户信息传输对象，包含用户信息、token和菜单资源
      */
-    public LoginUserDto login(String mobile, String password) {
+    public LoginUserDto login(UserLoginDto userLoginDto) {
+        String mobile = userLoginDto.getMobile();
+        String password = userLoginDto.getPassword();
+
         // 参数验证
         CheckUtils.check(StringUtils.hasText(mobile), "手机号不能为空");
         CheckUtils.check(StringUtils.hasText(password), "密码不能为空");

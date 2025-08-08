@@ -3,7 +3,6 @@ package com.ganpengyu.ronganxin.web;
 import com.ganpengyu.ronganxin.common.RaxResult;
 import com.ganpengyu.ronganxin.common.page.PageResult;
 import com.ganpengyu.ronganxin.service.UserService;
-import com.ganpengyu.ronganxin.web.dto.org.SysOrgDto;
 import com.ganpengyu.ronganxin.web.dto.user.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
