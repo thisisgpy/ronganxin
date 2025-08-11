@@ -1,4 +1,4 @@
-package com.ganpengyu.ronganxin.service;
+package com.ganpengyu.ronganxin.common.component;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;

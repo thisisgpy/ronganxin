@@ -1,6 +1,9 @@
 package com.ganpengyu.ronganxin.service;
 
+import com.ganpengyu.ronganxin.common.Constants;
+import com.ganpengyu.ronganxin.common.component.LocalCache;
 import com.ganpengyu.ronganxin.common.util.CheckUtils;
+import com.ganpengyu.ronganxin.common.util.JsonUtils;
 import com.ganpengyu.ronganxin.dao.SysResourceDao;
 import com.ganpengyu.ronganxin.dao.SysRoleResourceDao;
 import com.ganpengyu.ronganxin.dao.SysUserRoleDao;
@@ -13,6 +16,7 @@ import com.mybatisflex.core.query.QueryWrapper;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +39,9 @@ public class AuthService {
 
     @Resource
     private SysResourceDao sysResourceDao;
+
+    @Resource
+    private LocalCache<String, String> cache;
 
     /**
      * 为用户分配角色
@@ -114,12 +121,20 @@ public class AuthService {
      * @return 如果用户具有该资源权限则返回true，否则返回false
      */
     public boolean hasPermission(Long userId, String resourceCode) {
-        // TODO 这里需要接入缓存
-        // 获取用户拥有的所有资源编码列表
-        List<String> resourceCodes = this.findResourceCodesByUserId(userId);
+        List<String> resourceCodes;
+        String codesJson = cache.get(Constants.getCacheResourceCodesKey(userId));
+        if (StringUtils.hasText(codesJson)) {
+            // 从缓存中获取用户资源编码列表
+            resourceCodes = JsonUtils.fromJsonToList(codesJson, String.class);
+        } else {
+            // 获取用户拥有的所有资源编码列表
+            resourceCodes = this.findResourceCodesByUserId(userId);
+            cache.put(Constants.getCacheResourceCodesKey(userId), JsonUtils.toJson(resourceCodes), Constants.CACHE_AUTH_TTL);
+        }
         // 判断用户资源列表中是否包含指定的资源编码
         return resourceCodes.contains(resourceCode);
     }
+
 
     /**
      * 退出登录
@@ -128,9 +143,15 @@ public class AuthService {
      * @return 退出成功返回true，失败返回false
      */
     public boolean logout(Long userId) {
-        // TODO 清除缓存中的 token
+        // 删除 uid -> token 缓存
+        String cacheUidTokenKey = Constants.getCacheUidTokenKey(userId);
+        String token = cache.get(cacheUidTokenKey);
+        cache.remove(cacheUidTokenKey);
+        // 删除 token -> 用户信息缓存
+        String cacheTokenUserKey = Constants.getCacheTokenUserKey(token);
+        cache.remove(cacheTokenUserKey);
+
         return true;
     }
-
 
 }

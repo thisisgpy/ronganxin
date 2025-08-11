@@ -1,11 +1,15 @@
 package com.ganpengyu.ronganxin.service;
 
 import com.ganpengyu.ronganxin.beanmapper.UserBeanMapper;
+import com.ganpengyu.ronganxin.common.Constants;
 import com.ganpengyu.ronganxin.common.RaxException;
+import com.ganpengyu.ronganxin.common.component.JwtService;
+import com.ganpengyu.ronganxin.common.component.LocalCache;
 import com.ganpengyu.ronganxin.common.context.UserContext;
 import com.ganpengyu.ronganxin.common.page.PageResult;
 import com.ganpengyu.ronganxin.common.util.CheckUtils;
 import com.ganpengyu.ronganxin.common.util.CodecUtils;
+import com.ganpengyu.ronganxin.common.util.JsonUtils;
 import com.ganpengyu.ronganxin.dao.SysUserDao;
 import com.ganpengyu.ronganxin.model.SysUser;
 import com.ganpengyu.ronganxin.web.dto.auth.UserLoginDto;
@@ -43,6 +47,9 @@ public class UserService {
 
     @Resource
     private JwtService jwtService;
+
+    @Resource
+    private LocalCache<String, String> cache;
 
     @Resource
     private ResourceService resourceService;
@@ -283,15 +290,20 @@ public class UserService {
         // 设置用户基本信息
         loginUserDto.setUserInfo(userBeanMapper.toSysUserDto(sysUser));
         String token = jwtService.createToken(sysUser.getId());
-        // TODO token 加入缓存
         loginUserDto.setToken(token);
+
+        // 放入缓存 token -> 用户信息，有效期 6 小时
+        sysUser.setPassword(null);
+        String userJson = JsonUtils.toJson(sysUser);
+        cache.put(Constants.getCacheTokenUserKey(token), userJson, Constants.CACHE_AUTH_TTL);
+        // 缓存 uid -> token，有效期 6 小时
+        cache.put(Constants.getCacheUidTokenKey(sysUser.getId()), token, Constants.CACHE_AUTH_TTL);
 
         // 获取用户菜单资源
         List<SysResourceDto> menus = resourceService.findResourceByUserId(sysUser.getId());
         loginUserDto.setMenus(menus);
         return loginUserDto;
     }
-
 
     /**
      * 根据用户ID查找用户信息
