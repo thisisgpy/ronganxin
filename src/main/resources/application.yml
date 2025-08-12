@@ -32,6 +32,7 @@ springdoc:
     path: /api-ui
 app:
   mode: dev
+  devToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJyb25nYW54aW4iLCJpYXQiOjE3NTUwMDQwMTksImV4cCI6MTc1NTAxOTU3MSwidXNlcklkIjoxfQ.CB7CT8HQDOzf94C3ZHKs7_aaqL9xo2f8reg7cPQhAsA
   defaultPwd: 8008208820
   jwt:
     secret: Jc^T9kN6bvBZH_Q3@PWU

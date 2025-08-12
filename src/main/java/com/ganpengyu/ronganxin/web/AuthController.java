@@ -2,27 +2,19 @@ package com.ganpengyu.ronganxin.web;
 
 import com.ganpengyu.ronganxin.common.RaxResult;
 import com.ganpengyu.ronganxin.service.AuthService;
-import com.ganpengyu.ronganxin.service.UserService;
 import com.ganpengyu.ronganxin.web.dto.auth.AssignRoleResourceDto;
 import com.ganpengyu.ronganxin.web.dto.auth.AssignUserRoleDto;
 import com.ganpengyu.ronganxin.web.dto.auth.UserLoginDto;
 import com.ganpengyu.ronganxin.web.dto.user.LoginUserDto;
-
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.StringToClassMapItem;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.*;
 
 
 @Tag(name = "认证接口")
@@ -32,11 +24,8 @@ public class AuthController {
 
     private final AuthService authService;
 
-    private final UserService userService;
-
-    public AuthController(AuthService authService, UserService userService) {
+    public AuthController(AuthService authService) {
         this.authService = authService;
-        this.userService = userService;
     }
 
     @Operation(summary = "用户登录", parameters = {
@@ -51,7 +40,7 @@ public class AuthController {
     })
     @PostMapping("/login")
     public RaxResult<LoginUserDto> login(@RequestBody @Valid UserLoginDto userLoginDto) {
-        return RaxResult.ok(userService.login(userLoginDto));
+        return RaxResult.ok(authService.login(userLoginDto));
     }
 
     @Operation(summary = "用户退出登录", parameters = {

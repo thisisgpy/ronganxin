@@ -13,10 +13,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -44,7 +41,7 @@ public class ResourceController {
                                     @StringToClassMapItem(key = "data", value = Boolean.class)
                             }))),
             })
-    @RequestMapping(value = "/create")
+    @PostMapping(value = "/create")
     public RaxResult<Boolean> createResource(CreateResourceDto createResourceDto) {
         resourceService.createResource(createResourceDto);
         return RaxResult.ok(true);
@@ -64,7 +61,7 @@ public class ResourceController {
                     ))
             }
     )
-    @RequestMapping(value = "/update")
+    @PostMapping(value = "/update")
     public RaxResult<Boolean> updateResource(UpdateResourceDto updateResourceDto) {
         resourceService.updateResource(updateResourceDto);
         return RaxResult.ok(true);
@@ -84,7 +81,7 @@ public class ResourceController {
                     ))
             }
     )
-    @RequestMapping(value = "/remove/{id}")
+    @GetMapping(value = "/remove/{id}")
     public RaxResult<Boolean> removeResource(@PathVariable("id") Long id) {
         resourceService.removeResource(id);
         return RaxResult.ok(true);

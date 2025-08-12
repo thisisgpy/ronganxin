@@ -1,17 +1,25 @@
 package com.ganpengyu.ronganxin.service;
 
+import com.ganpengyu.ronganxin.beanmapper.UserBeanMapper;
 import com.ganpengyu.ronganxin.common.Constants;
+import com.ganpengyu.ronganxin.common.component.JwtService;
 import com.ganpengyu.ronganxin.common.component.LocalCache;
 import com.ganpengyu.ronganxin.common.util.CheckUtils;
+import com.ganpengyu.ronganxin.common.util.CodecUtils;
 import com.ganpengyu.ronganxin.common.util.JsonUtils;
 import com.ganpengyu.ronganxin.dao.SysResourceDao;
 import com.ganpengyu.ronganxin.dao.SysRoleResourceDao;
+import com.ganpengyu.ronganxin.dao.SysUserDao;
 import com.ganpengyu.ronganxin.dao.SysUserRoleDao;
 import com.ganpengyu.ronganxin.model.SysResource;
 import com.ganpengyu.ronganxin.model.SysRoleResource;
+import com.ganpengyu.ronganxin.model.SysUser;
 import com.ganpengyu.ronganxin.model.SysUserRole;
 import com.ganpengyu.ronganxin.web.dto.auth.AssignRoleResourceDto;
 import com.ganpengyu.ronganxin.web.dto.auth.AssignUserRoleDto;
+import com.ganpengyu.ronganxin.web.dto.auth.UserLoginDto;
+import com.ganpengyu.ronganxin.web.dto.resource.SysResourceDto;
+import com.ganpengyu.ronganxin.web.dto.user.LoginUserDto;
 import com.mybatisflex.core.query.QueryWrapper;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
@@ -38,7 +46,19 @@ public class AuthService {
     private SysRoleResourceDao sysRoleResourceDao;
 
     @Resource
+    private SysUserDao sysUserDao;
+
+    @Resource
     private SysResourceDao sysResourceDao;
+
+    @Resource
+    private JwtService jwtService;
+
+    @Resource
+    private UserBeanMapper userBeanMapper;
+
+    @Resource
+    private ResourceService resourceService;
 
     @Resource
     private LocalCache<String, String> cache;
@@ -135,6 +155,54 @@ public class AuthService {
         return resourceCodes.contains(resourceCode);
     }
 
+    /**
+     * 用户登录功能
+     *
+     * @param userLoginDto 用户登录传输对象，包含手机号和密码
+     * @return LoginUserDto 登录用户信息传输对象，包含用户信息、token和菜单资源
+     */
+    public LoginUserDto login(UserLoginDto userLoginDto) {
+        String mobile = userLoginDto.getMobile();
+        String password = userLoginDto.getPassword();
+
+        // 参数验证
+        CheckUtils.check(StringUtils.hasText(mobile), "手机号不能为空");
+        CheckUtils.check(StringUtils.hasText(password), "密码不能为空");
+
+        LoginUserDto loginUserDto = new LoginUserDto();
+
+        // 密码加密处理
+        String encryptPassword = CodecUtils.encryptPassword(password);
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("mobile", mobile)
+                .eq("password", encryptPassword)
+                .eq("status", 1); // 建议使用常量替代硬编码
+        SysUser sysUser = sysUserDao.selectOneByQuery(queryWrapper);
+        CheckUtils.check(sysUser != null, "账号或密码错误");
+        Long userId = sysUser.getId();
+
+        // 设置用户基本信息
+        loginUserDto.setUserInfo(userBeanMapper.toSysUserDto(sysUser));
+        String token = jwtService.createToken(userId);
+        loginUserDto.setToken(token);
+
+        // 获取用户菜单资源
+        List<SysResourceDto> menus = resourceService.findResourceByUserId(userId);
+        loginUserDto.setMenus(menus);
+
+        // 缓存：uid -> token
+        cache.put(Constants.getCacheTokenKey(userId), token, Constants.CACHE_AUTH_TTL);
+        // 缓存：uid -> 用户信息
+        sysUser.setPassword(null);
+        String userJson = JsonUtils.toJson(sysUser);
+        cache.put(Constants.getCacheUserKey(userId), userJson, Constants.CACHE_AUTH_TTL);
+        // 缓存：uid -> 资源编码
+        List<String> resourceCodes = this.findResourceCodesByUserId(userId);
+        cache.put(Constants.getCacheResourceCodesKey(userId), JsonUtils.toJson(resourceCodes), Constants.CACHE_AUTH_TTL);
+
+        return loginUserDto;
+    }
+
 
     /**
      * 退出登录
@@ -143,14 +211,9 @@ public class AuthService {
      * @return 退出成功返回true，失败返回false
      */
     public boolean logout(Long userId) {
-        // 删除 uid -> token 缓存
-        String cacheUidTokenKey = Constants.getCacheUidTokenKey(userId);
-        String token = cache.get(cacheUidTokenKey);
-        cache.remove(cacheUidTokenKey);
-        // 删除 token -> 用户信息缓存
-        String cacheTokenUserKey = Constants.getCacheTokenUserKey(token);
-        cache.remove(cacheTokenUserKey);
-
+        cache.remove(Constants.getCacheUserKey(userId));
+        cache.remove(Constants.getCacheTokenKey(userId));
+        cache.remove(Constants.getCacheResourceCodesKey(userId));
         return true;
     }
 

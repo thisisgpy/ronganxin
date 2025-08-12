@@ -7,19 +7,19 @@ package com.ganpengyu.ronganxin.common;
 public class Constants {
 
     /**
-     * 缓存中token到用户信息的键前缀
+     * uid -> 用户信息
      */
-    public static String CACHE_TOKEN_USER_PREFIX = "token:tu:";
+    public static String CACHE_USER_PREFIX = "user:uid:";
 
     /**
-     * 缓存中用户ID到token的键前缀
+     * uid -> token
      */
-    public static String CACHE_UID_TOKEN_PREFIX = "token:ut:";
+    public static String CACHE_TOKEN_PREFIX = "token:uid:";
 
     /**
-     * 缓存中用户资源码的键前缀
+     * uid -> resource codes
      */
-    public static String CACHE_RESOURCE_CODES_PREFIX = "resource:codes:";
+    public static String CACHE_RESOURCE_CODES_PREFIX = "resource:codes:uid:";
 
     /**
      * 缓存认证信息的生存时间（TTL）
@@ -28,35 +28,16 @@ public class Constants {
      */
     public static long CACHE_AUTH_TTL = 60 * 60 * 6;
 
-    /**
-     * 根据token生成缓存中token到用户信息的键
-     *
-     * @param token 用户token
-     * @return 缓存键字符串
-     */
-    public static String getCacheTokenUserKey(String token) {
-        return CACHE_TOKEN_USER_PREFIX + token;
+    public static String getCacheUserKey(Long uid) {
+        return CACHE_USER_PREFIX + uid;
     }
 
-    /**
-     * 根据用户ID生成缓存中用户ID到token的键
-     *
-     * @param uid 用户ID
-     * @return 缓存键字符串
-     */
-    public static String getCacheUidTokenKey(Long uid) {
-        return CACHE_UID_TOKEN_PREFIX + uid;
+    public static String getCacheTokenKey(Long uid) {
+        return CACHE_TOKEN_PREFIX + uid;
     }
 
-    /**
-     * 根据用户ID生成缓存中用户资源码的键
-     *
-     * @param uid 用户ID
-     * @return 缓存键字符串
-     */
     public static String getCacheResourceCodesKey(Long uid) {
         return CACHE_RESOURCE_CODES_PREFIX + uid;
     }
-
 
 }

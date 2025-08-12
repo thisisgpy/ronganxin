@@ -2,6 +2,7 @@ package com.ganpengyu.ronganxin.common.component;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.util.Map;
@@ -17,6 +18,7 @@ import java.util.concurrent.TimeUnit;
  * @author Pengyu Gan
  * CreateDate 2025/8/11
  */
+@Component
 public class LocalCache<K, V> implements Cloneable {
 
     /**

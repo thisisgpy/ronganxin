@@ -1,25 +1,17 @@
 package com.ganpengyu.ronganxin.service;
 
 import com.ganpengyu.ronganxin.beanmapper.UserBeanMapper;
-import com.ganpengyu.ronganxin.common.Constants;
 import com.ganpengyu.ronganxin.common.RaxException;
-import com.ganpengyu.ronganxin.common.component.JwtService;
-import com.ganpengyu.ronganxin.common.component.LocalCache;
 import com.ganpengyu.ronganxin.common.context.UserContext;
 import com.ganpengyu.ronganxin.common.page.PageResult;
 import com.ganpengyu.ronganxin.common.util.CheckUtils;
 import com.ganpengyu.ronganxin.common.util.CodecUtils;
-import com.ganpengyu.ronganxin.common.util.JsonUtils;
 import com.ganpengyu.ronganxin.dao.SysUserDao;
 import com.ganpengyu.ronganxin.model.SysUser;
-import com.ganpengyu.ronganxin.web.dto.auth.UserLoginDto;
-import com.ganpengyu.ronganxin.web.dto.resource.SysResourceDto;
 import com.ganpengyu.ronganxin.web.dto.user.*;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import jakarta.annotation.Resource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,21 +30,11 @@ import java.util.List;
 @Service
 public class UserService {
 
-    private static final Logger log = LoggerFactory.getLogger(UserService.class);
     @Resource
     private SysUserDao sysUserDao;
 
     @Resource
     private UserBeanMapper userBeanMapper;
-
-    @Resource
-    private JwtService jwtService;
-
-    @Resource
-    private LocalCache<String, String> cache;
-
-    @Resource
-    private ResourceService resourceService;
 
     @Value("${app.defaultPwd}")
     private String defaultPassword;
@@ -260,49 +242,6 @@ public class UserService {
         CheckUtils.check(sysUser != null, "用户不存在");
         // 将用户实体对象转换为DTO对象并返回
         return userBeanMapper.toSysUserDto(sysUser);
-    }
-
-    /**
-     * 用户登录功能
-     *
-     * @param userLoginDto 用户登录传输对象，包含手机号和密码
-     * @return LoginUserDto 登录用户信息传输对象，包含用户信息、token和菜单资源
-     */
-    public LoginUserDto login(UserLoginDto userLoginDto) {
-        String mobile = userLoginDto.getMobile();
-        String password = userLoginDto.getPassword();
-
-        // 参数验证
-        CheckUtils.check(StringUtils.hasText(mobile), "手机号不能为空");
-        CheckUtils.check(StringUtils.hasText(password), "密码不能为空");
-
-        LoginUserDto loginUserDto = new LoginUserDto();
-
-        // 密码加密处理
-        String encryptPassword = CodecUtils.encryptPassword(password);
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("mobile", mobile)
-                .eq("password", encryptPassword)
-                .eq("status", 1); // 建议使用常量替代硬编码
-        SysUser sysUser = sysUserDao.selectOneByQuery(queryWrapper);
-        CheckUtils.check(sysUser != null, "账号或密码错误");
-
-        // 设置用户基本信息
-        loginUserDto.setUserInfo(userBeanMapper.toSysUserDto(sysUser));
-        String token = jwtService.createToken(sysUser.getId());
-        loginUserDto.setToken(token);
-
-        // 放入缓存 token -> 用户信息，有效期 6 小时
-        sysUser.setPassword(null);
-        String userJson = JsonUtils.toJson(sysUser);
-        cache.put(Constants.getCacheTokenUserKey(token), userJson, Constants.CACHE_AUTH_TTL);
-        // 缓存 uid -> token，有效期 6 小时
-        cache.put(Constants.getCacheUidTokenKey(sysUser.getId()), token, Constants.CACHE_AUTH_TTL);
-
-        // 获取用户菜单资源
-        List<SysResourceDto> menus = resourceService.findResourceByUserId(sysUser.getId());
-        loginUserDto.setMenus(menus);
-        return loginUserDto;
     }
 
     /**
