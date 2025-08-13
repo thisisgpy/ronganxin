@@ -2,6 +2,7 @@ package com.ganpengyu.ronganxin.common;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -12,6 +13,7 @@ import java.io.Serializable;
  * CreateDate 2025/3/11
  */
 @Data
+@NoArgsConstructor
 @Schema(name = "RaxResult")
 public class RaxResult<T> implements Serializable {
 

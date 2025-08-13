@@ -45,7 +45,7 @@ DROP TABLE IF EXISTS `sys_user_role`;
 CREATE TABLE
     `sys_user_role`
 (
-    `id`      BIGINT(20) NOT NULL COMMENT '用户角色关系ID',
+    `id`      BIGINT(20) AUTO_INCREMENT COMMENT '用户角色关系ID',
     `user_id` BIGINT(20) NOT NULL COMMENT '用户ID',
     `role_id` BIGINT(20) NOT NULL COMMENT '角色ID',
     PRIMARY KEY `pk_user_role_id` (`id`)
@@ -83,7 +83,7 @@ DROP TABLE IF EXISTS `sys_role_resource`;
 CREATE TABLE
     `sys_role_resource`
 (
-    `id`          BIGINT(20) NOT NULL COMMENT '角色资源关系ID',
+    `id`          BIGINT(20) AUTO_INCREMENT COMMENT '角色资源关系ID',
     `role_id`     BIGINT(20) NOT NULL COMMENT '角色ID',
     `resource_id` BIGINT(20) NOT NULL COMMENT '资源ID',
     PRIMARY KEY `pk_role_resource_id` (`id`)
