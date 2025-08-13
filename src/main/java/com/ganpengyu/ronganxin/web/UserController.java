@@ -1,8 +1,6 @@
 package com.ganpengyu.ronganxin.web;
 
 import com.ganpengyu.ronganxin.common.RaxResult;
-import com.ganpengyu.ronganxin.common.component.AuthRequired;
-import com.ganpengyu.ronganxin.common.context.UserContext;
 import com.ganpengyu.ronganxin.common.page.PageResult;
 import com.ganpengyu.ronganxin.service.UserService;
 import com.ganpengyu.ronganxin.web.dto.user.*;
@@ -30,12 +28,6 @@ public class UserController {
 
     @Resource
     private UserService userService;
-
-    @AuthRequired
-    @GetMapping(value = "/demo")
-    public RaxResult<String> demo() {
-        return RaxResult.ok(String.valueOf(UserContext.getUserId()));
-    }
 
     @Operation(summary = "创建用户",
             parameters = {

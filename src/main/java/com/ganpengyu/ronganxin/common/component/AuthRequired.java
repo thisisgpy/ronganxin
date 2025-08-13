@@ -15,8 +15,13 @@ import java.lang.annotation.*;
 public @interface AuthRequired {
 
     /**
-     * 资源权限码
+     * 资源权限码，当 matchType = NONE 时，这里配置的任何权限都将被忽略
      */
     String[] value() default {};
+
+    /**
+     * 权限匹配类型，默认为 ALL，表示必须所有权限匹配
+     */
+    AuthMatchType matchType() default AuthMatchType.ALL;
 
 }

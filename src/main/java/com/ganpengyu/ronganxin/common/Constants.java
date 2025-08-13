@@ -6,38 +6,26 @@ package com.ganpengyu.ronganxin.common;
  */
 public class Constants {
 
-    /**
-     * uid -> 用户信息
-     */
-    public static String CACHE_USER_PREFIX = "user:uid:";
+    public static final String AUTH_PREFIX = "auth:";
 
-    /**
-     * uid -> token
-     */
-    public static String CACHE_TOKEN_PREFIX = "token:uid:";
+    public static final String AUTH_TOKEN = AUTH_PREFIX + "%s:" + "token";
 
-    /**
-     * uid -> resource codes
-     */
-    public static String CACHE_RESOURCE_CODES_PREFIX = "resource:codes:uid:";
+    public static final String AUTH_USER_INFO = AUTH_PREFIX + "%s:" + "userInfo";
 
-    /**
-     * 缓存认证信息的生存时间（TTL）
-     * 单位：秒
-     * 默认值：6小时（60 * 60 * 6 = 21600秒）
-     */
-    public static long CACHE_AUTH_TTL = 60 * 60 * 6;
+    public static final String AUTH_RESOURCE_CODES = AUTH_PREFIX + "%s:" + "codes";
 
-    public static String getCacheUserKey(Long uid) {
-        return CACHE_USER_PREFIX + uid;
+    public static final Long AUTH_TTL = 60 * 60 * 6L;
+
+    public static String getAuthTokenKey(Long userId) {
+        return String.format(AUTH_TOKEN, userId);
     }
 
-    public static String getCacheTokenKey(Long uid) {
-        return CACHE_TOKEN_PREFIX + uid;
+    public static String getAuthUserInfoKey(Long userId) {
+        return String.format(AUTH_USER_INFO, userId);
     }
 
-    public static String getCacheResourceCodesKey(Long uid) {
-        return CACHE_RESOURCE_CODES_PREFIX + uid;
+    public static String getAuthResourceCodesKey(Long userId) {
+        return String.format(AUTH_RESOURCE_CODES, userId);
     }
 
 }

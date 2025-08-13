@@ -1,11 +1,14 @@
 package com.ganpengyu.ronganxin.common;
 
+import com.ganpengyu.ronganxin.common.component.AuthMatchType;
 import com.ganpengyu.ronganxin.common.component.AuthRequired;
 import com.ganpengyu.ronganxin.common.component.JwtService;
-import com.ganpengyu.ronganxin.common.component.LocalCache;
+import com.ganpengyu.ronganxin.common.component.RedisService;
 import com.ganpengyu.ronganxin.common.context.UserContext;
 import com.ganpengyu.ronganxin.common.util.JsonUtils;
 import com.ganpengyu.ronganxin.common.util.StopWatch;
+import com.ganpengyu.ronganxin.service.AuthService;
+import com.ganpengyu.ronganxin.service.UserService;
 import com.ganpengyu.ronganxin.web.dto.user.LoginUserDto;
 import com.ganpengyu.ronganxin.web.dto.user.SysUserDto;
 import jakarta.annotation.Resource;
@@ -39,7 +42,13 @@ import java.util.List;
 public class RaxAspect {
 
     @Resource
-    private LocalCache<String, String> cache;
+    private UserService userService;
+
+    @Resource
+    private AuthService authService;
+
+    @Resource
+    private RedisService redisService;
 
     @Resource
     private JwtService jwtService;
@@ -72,11 +81,22 @@ public class RaxAspect {
         RaxResult<?> result;
         StopWatch stopWatch = new StopWatch();
         try {
-            result = before(pjp);
-            if (result != null) {
-                return result;
+            // 开发模式下设置默认用户上下文
+            if (appMode.equals("dev")) {
+                SysUserDto userInfo = this.getUserInfo(null);
+                LoginUserDto loginUser = new LoginUserDto();
+                loginUser.setUserInfo(userInfo);
+                UserContext.setContext(loginUser);
+            } else {
+                // 非开发模式下执行前置权限校验逻辑
+                result = before(pjp);
+                if (result != null) {
+                    return result;
+                }
+                stopWatch.reset();
             }
-            stopWatch.reset();
+
+            // 执行目标方法并记录耗时
             result = (RaxResult<?>) pjp.proceed();
             log.info("{} cost time {} ms", pjp.getSignature(), stopWatch.getElapse());
         } catch (Throwable e) { // 处理目标方法执行过程中抛出的异常
@@ -89,6 +109,7 @@ public class RaxAspect {
         return result;
     }
 
+
     /**
      * 在方法执行前进行权限验证处理
      *
@@ -97,50 +118,68 @@ public class RaxAspect {
      * @throws Exception 处理过程中可能抛出的异常
      */
     private RaxResult<?> before(ProceedingJoinPoint pjp) throws Exception {
+        // 获取方法上的 @AuthRequired 注解，若不存在则跳过权限验证
         AuthRequired authRequired = getAnnotation(pjp, AuthRequired.class);
-        if (null != authRequired) {
-            String token = getToken(pjp);
-            // 检查 token 是否合法
-            Long userId = jwtService.verifyToken(token);
-            // 检查是否处于登录状态，非登录状态时缓存中没有 token
-            String cachedToken = getCachedToken(userId);
-            if (!StringUtils.hasText(cachedToken)) {
-                return RaxResult.error("未授权访问");
-            }
-            // 从缓存中获取用户信息
-            String userJson = getUserJson(userId);
-            if (StringUtils.hasText(userJson)) {
-                SysUserDto user = JsonUtils.fromJson(userJson, SysUserDto.class);
-                if (user == null) {
+        if (null == authRequired) {
+            return null;
+        }
+
+        // 从请求中提取 token
+        String token = getToken(pjp);
+
+        // 检查 token 是否合法，并解析出用户ID
+        Long userId = jwtService.verifyToken(token);
+
+        // 检查用户是否处于登录状态（缓存中是否存在有效 token）
+        String cachedToken = getCachedToken(userId);
+        if (!StringUtils.hasText(cachedToken)) {
+            return RaxResult.error("未授权访问");
+        }
+
+        // 获取或加载用户信息
+        SysUserDto user = getUserInfo(userId);
+        if (null == user) {
+            user = userService.findUserDtoById(userId);
+        }
+
+        // 将用户信息设置到当前线程的上下文环境中
+        LoginUserDto loginUser = new LoginUserDto();
+        loginUser.setUserInfo(user);
+        loginUser.setToken(token);
+        UserContext.setContext(loginUser);
+
+        // 获取注解中定义的权限码和匹配规则
+        String[] requiredCodes = authRequired.value();
+        AuthMatchType authMatchType = authRequired.matchType();
+
+        // 如果匹配类型为 NONE，表示不需权限校验，直接放行
+        if (authMatchType.equals(AuthMatchType.NONE)) {
+            return null;
+        }
+
+        // 查询用户拥有的所有资源权限码
+        List<String> resourceCodes = authService.findResourceCodesByUserId(userId);
+
+        // 根据匹配规则判断用户是否有权限访问
+        boolean allowed = false;
+        for (String requiredCode : requiredCodes) {
+            if (!resourceCodes.contains(requiredCode)) {
+                // 若是全匹配模式（ALL），任意一个权限码不匹配即拒绝访问
+                if (authMatchType.equals(AuthMatchType.ALL)) {
                     return RaxResult.error("未授权访问");
                 }
-                // 将用户信息保存到请求上下文
-                LoginUserDto loginUser = new LoginUserDto();
-                loginUser.setUserInfo(user);
-                loginUser.setToken(token);
-                UserContext.setContext(loginUser);
-            }
-            // 验证用户是否拥有指定的资源权限码
-            String[] requiredCodes = authRequired.value();
-            // 如果没有指定资源权限码，则表示不需要验证权限
-            if (requiredCodes.length == 0 || appMode.equals("dev")) {
-                return null;
-            }
-            // 从缓存中获取用户资源权限列表
-            String resourceCodesJson = cache.get(Constants.getCacheResourceCodesKey(userId));
-            if (StringUtils.hasText(resourceCodesJson)) {
-                List<String> resourceCodes = JsonUtils.fromJsonToList(resourceCodesJson, String.class);
-                if (resourceCodes == null) {
-                    return RaxResult.error("未授权访问");
-                }
-                // 接口的权限编码可能有多个，用户必须同时全部具备才允许访问
-                for (String requiredCode : requiredCodes) {
-                    if (!resourceCodes.contains(requiredCode)) {
-                        return RaxResult.error("未授权访问");
-                    }
-                }
+            } else {
+                // 若是任一匹配模式（ANY），只要有一个权限码匹配即可
+                allowed = true;
             }
         }
+
+        // 若没有任何权限码匹配且不是 ALL 模式，则拒绝访问
+        if (!allowed) {
+            return RaxResult.error("未授权访问");
+        }
+
+        // 权限验证通过，返回 null 表示继续执行原方法
         return null;
     }
 
@@ -183,18 +222,16 @@ public class RaxAspect {
         }
     }
 
-    private String getUserJson(Long userId) {
+    private SysUserDto getUserInfo(Long userId) {
         if (appMode.equals("dev")) {
-            return "{\"id\":1,\"orgId\":10000,\"mobile\":\"15982338164\",\"name\":\"干鹏宇\",\"gender\":null,\"idCard\":null,\"isDefaultPassword\":null,\"status\":null,\"isDeleted\":null,\"createTime\":null,\"createBy\":null,\"updateTime\":null,\"updateBy\":null}\n";
+            String json = "{\"id\":1,\"orgId\":10000,\"mobile\":\"15982338164\",\"name\":\"干鹏宇\",\"gender\":null,\"idCard\":null,\"isDefaultPassword\":null,\"status\":null,\"isDeleted\":null,\"createTime\":null,\"createBy\":null,\"updateTime\":null,\"updateBy\":null}\n";
+            return JsonUtils.fromJson(json, SysUserDto.class);
         }
-        return cache.get(Constants.getCacheUserKey(userId));
+        return redisService.get(Constants.getAuthUserInfoKey(userId), SysUserDto.class);
     }
 
     private String getCachedToken(Long userId) {
-        if (appMode.equals("dev")) {
-            return devToken;
-        }
-        return cache.get(Constants.getCacheTokenKey(userId));
+        return redisService.get(Constants.getAuthTokenKey(userId), String.class);
     }
 
 

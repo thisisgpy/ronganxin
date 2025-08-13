@@ -18,6 +18,13 @@ spring:
       leak-detection-threshold: 60000
       pool-name: Rax
       connection-test-query: SELECT 1
+  data:
+    redis:
+      host: 8.137.57.211
+      port: 6379
+      password: ""
+      database: 0
+      connect-timeout: 5s
 mybatis:
   mapper-locations: classpath:mappers/*.xml
   config-location: classpath:mybatis-config.xml
@@ -32,8 +39,8 @@ springdoc:
     path: /api-ui
 app:
   mode: dev
-  devToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJyb25nYW54aW4iLCJpYXQiOjE3NTUwMDQwMTksImV4cCI6MTc1NTAxOTU3MSwidXNlcklkIjoxfQ.CB7CT8HQDOzf94C3ZHKs7_aaqL9xo2f8reg7cPQhAsA
+  devToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJyb25nYW54aW4iLCJpYXQiOjE3NTUwNjE0OTEsImV4cCI6MTc3MDYxMzQ5MSwidXNlcklkIjoxfQ.GvTBKWTRGb0KZV8BfET19kGw_2M4KSmMhhKkMZuNtgI
   defaultPwd: 8008208820
   jwt:
     secret: Jc^T9kN6bvBZH_Q3@PWU
-    expiration: 21600
+    expiration: 21600000

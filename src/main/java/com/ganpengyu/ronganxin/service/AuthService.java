@@ -1,12 +1,12 @@
 package com.ganpengyu.ronganxin.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.ganpengyu.ronganxin.beanmapper.UserBeanMapper;
 import com.ganpengyu.ronganxin.common.Constants;
 import com.ganpengyu.ronganxin.common.component.JwtService;
-import com.ganpengyu.ronganxin.common.component.LocalCache;
+import com.ganpengyu.ronganxin.common.component.RedisService;
 import com.ganpengyu.ronganxin.common.util.CheckUtils;
 import com.ganpengyu.ronganxin.common.util.CodecUtils;
-import com.ganpengyu.ronganxin.common.util.JsonUtils;
 import com.ganpengyu.ronganxin.dao.SysResourceDao;
 import com.ganpengyu.ronganxin.dao.SysRoleResourceDao;
 import com.ganpengyu.ronganxin.dao.SysUserDao;
@@ -28,7 +28,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 认证授权服务
@@ -61,7 +61,7 @@ public class AuthService {
     private ResourceService resourceService;
 
     @Resource
-    private LocalCache<String, String> cache;
+    private RedisService redisService;
 
     /**
      * 为用户分配角色
@@ -129,8 +129,17 @@ public class AuthService {
      * @return 资源编码列表
      */
     public List<String> findResourceCodesByUserId(Long userId) {
-        List<SysResource> resources = sysResourceDao.findResourceByUserId(userId);
-        return resources.stream().map(SysResource::getCode).collect(Collectors.toList());
+        // 从缓存读取资源编码列表
+        List<String> resourceCodes = redisService.get(Constants.getAuthResourceCodesKey(userId), new TypeReference<List<String>>() {
+        });
+        // 查询数据库
+        if (resourceCodes == null || resourceCodes.isEmpty()) {
+            List<SysResource> resources = sysResourceDao.findResourceByUserId(userId);
+            resourceCodes = resources.stream().map(SysResource::getCode).toList();
+            // 放入缓存
+            redisService.set(Constants.getAuthResourceCodesKey(userId), resourceCodes, Constants.AUTH_TTL, TimeUnit.SECONDS);
+        }
+        return resourceCodes;
     }
 
     /**
@@ -141,17 +150,7 @@ public class AuthService {
      * @return 如果用户具有该资源权限则返回true，否则返回false
      */
     public boolean hasPermission(Long userId, String resourceCode) {
-        List<String> resourceCodes;
-        String codesJson = cache.get(Constants.getCacheResourceCodesKey(userId));
-        if (StringUtils.hasText(codesJson)) {
-            // 从缓存中获取用户资源编码列表
-            resourceCodes = JsonUtils.fromJsonToList(codesJson, String.class);
-        } else {
-            // 获取用户拥有的所有资源编码列表
-            resourceCodes = this.findResourceCodesByUserId(userId);
-            cache.put(Constants.getCacheResourceCodesKey(userId), JsonUtils.toJson(resourceCodes), Constants.CACHE_AUTH_TTL);
-        }
-        // 判断用户资源列表中是否包含指定的资源编码
+        List<String> resourceCodes = this.findResourceCodesByUserId(userId);
         return resourceCodes.contains(resourceCode);
     }
 
@@ -190,16 +189,11 @@ public class AuthService {
         List<SysResourceDto> menus = resourceService.findResourceByUserId(userId);
         loginUserDto.setMenus(menus);
 
-        // 缓存：uid -> token
-        cache.put(Constants.getCacheTokenKey(userId), token, Constants.CACHE_AUTH_TTL);
-        // 缓存：uid -> 用户信息
+        // 缓存 token
+        redisService.set(Constants.getAuthTokenKey(userId), token, Constants.AUTH_TTL, TimeUnit.SECONDS);
+        // 缓存用户信息
         sysUser.setPassword(null);
-        String userJson = JsonUtils.toJson(sysUser);
-        cache.put(Constants.getCacheUserKey(userId), userJson, Constants.CACHE_AUTH_TTL);
-        // 缓存：uid -> 资源编码
-        List<String> resourceCodes = this.findResourceCodesByUserId(userId);
-        cache.put(Constants.getCacheResourceCodesKey(userId), JsonUtils.toJson(resourceCodes), Constants.CACHE_AUTH_TTL);
-
+        redisService.set(Constants.getAuthUserInfoKey(userId), sysUser, Constants.AUTH_TTL, TimeUnit.SECONDS);
         return loginUserDto;
     }
 
@@ -211,9 +205,9 @@ public class AuthService {
      * @return 退出成功返回true，失败返回false
      */
     public boolean logout(Long userId) {
-        cache.remove(Constants.getCacheUserKey(userId));
-        cache.remove(Constants.getCacheTokenKey(userId));
-        cache.remove(Constants.getCacheResourceCodesKey(userId));
+        redisService.delete(Constants.getAuthTokenKey(userId));
+        redisService.delete(Constants.getAuthUserInfoKey(userId));
+        redisService.delete(Constants.getAuthResourceCodesKey(userId));
         return true;
     }
 
