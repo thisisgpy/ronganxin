@@ -5,6 +5,7 @@ import com.mybatisflex.core.BaseMapper;
 
 /**
  * 组织
+ *
  * @author Pengyu Gan
  * CreateDate 2025/7/31
  */

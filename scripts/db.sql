@@ -163,6 +163,26 @@ CREATE TABLE
     PRIMARY KEY `pk_bank_code` (`code`)
 );
 
+-- 固定资产
+DROP TABLE IF EXISTS `asset_fixed`;
+
+CREATE TABLE
+    `asset_fixed`
+(
+    `id`          BIGINT(20)  NOT NULL COMMENT '固定资产ID',
+    `name`        VARCHAR(128) COMMENT '固定资产名称',
+    `code`        VARCHAR(64) COMMENT '固定资产编码',
+    `address`     VARCHAR(256) COMMENT '固定资产地址',
+    `book_value`  BIGINT(20) COMMENT '固定资产账面价值，以分计算',
+    `org_id`      BIGINT(20)  NOT NULL COMMENT '所属组织ID',
+    `is_deleted`  TINYINT(1) DEFAULT 0 COMMENT '是否删除. 0: 否, 1: 是',
+    `create_time` DATETIME   DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `create_by`   VARCHAR(32) NOT NULL COMMENT '创建人',
+    `update_time` DATETIME ON UPDATE CURRENT_TIMESTAMP COMMENT '信息更新时间',
+    `update_by`   VARCHAR(32) COMMENT '信息更新人',
+    PRIMARY KEY `pk_asset_fixed_id` (`id`)
+);
+
 -- 附件
 DROP TABLE IF EXISTS `sys_attachment`;
 
@@ -480,21 +500,4 @@ CREATE TABLE
     `update_time`    DATETIME ON UPDATE CURRENT_TIMESTAMP COMMENT '信息更新时间',
     `update_by`      VARCHAR(32) COMMENT '信息更新人',
     PRIMARY KEY `pk_fin_existing_linkage_id` (`id`)
-);
-
--- 固定资产
-DROP TABLE IF EXISTS `asset_fixed`;
-
-CREATE TABLE
-    `asset_fixed`
-(
-    `id`          BIGINT(20)  NOT NULL COMMENT '固定资产ID',
-    `name`        VARCHAR(128) COMMENT '固定资产名称',
-    `org_id`      BIGINT(20)  NOT NULL COMMENT '所属组织ID',
-    `is_deleted`  TINYINT(1) DEFAULT 0 COMMENT '是否删除. 0: 否, 1: 是',
-    `create_time` DATETIME   DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `create_by`   VARCHAR(32) NOT NULL COMMENT '创建人',
-    `update_time` DATETIME ON UPDATE CURRENT_TIMESTAMP COMMENT '信息更新时间',
-    `update_by`   VARCHAR(32) COMMENT '信息更新人',
-    PRIMARY KEY `pk_asset_fixed_id` (`id`)
 );

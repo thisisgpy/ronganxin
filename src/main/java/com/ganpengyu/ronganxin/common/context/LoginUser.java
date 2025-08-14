@@ -4,6 +4,7 @@ import lombok.Data;
 
 /**
  * 登录用户信息
+ *
  * @author Pengyu Gan
  * CreateDate 2025/7/9
  */

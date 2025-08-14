@@ -1,14 +1,15 @@
 package com.ganpengyu.ronganxin.model;
 
-import java.time.LocalDateTime;
-
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.annotation.Table;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 /**
  * 角色
+ *
  * @author Pengyu Gan
  * CreateDate 2025/7/31
  */

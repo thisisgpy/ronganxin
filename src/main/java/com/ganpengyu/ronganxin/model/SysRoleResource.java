@@ -6,8 +6,6 @@ import com.mybatisflex.annotation.Table;
 import lombok.Data;
 
 /**
- * 
- * 
  * @author Pengyu Gan
  * CreateDate 2025/7/31
  */
@@ -16,18 +14,18 @@ import lombok.Data;
 @Table("sys_role_resource")
 public class SysRoleResource {
     /**
-    * 角色资源关系ID
-    */
+     * 角色资源关系ID
+     */
     @Id(keyType = KeyType.Auto)
     private Long id;
 
     /**
-    * 角色ID
-    */
+     * 角色ID
+     */
     private Long roleId;
 
     /**
-    * 资源ID
-    */
+     * 资源ID
+     */
     private Long resourceId;
 }
