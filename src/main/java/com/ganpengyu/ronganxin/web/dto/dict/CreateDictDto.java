@@ -13,17 +13,17 @@ import org.hibernate.validator.constraints.Length;
 @Schema(name = "CreateDictDto")
 public class CreateDictDto {
 
-    @NotEmpty
-    @Length(max = 64)
+    @NotEmpty(message = "字典编码不能为空")
+    @Length(max = 64, message = "字典编码长度不能超过64个字符")
     @Schema(name = "字典编码")
     private String code;
 
-    @NotEmpty
-    @Length(max = 64)
+    @NotEmpty(message = "字典名称不能为空")
+    @Length(max = 64, message = "字典名称长度不能超过64个字符")
     @Schema(name = "字典名称")
     private String name;
 
-    @Length(max = 128)
+    @Length(max = 128, message = "字典备注长度不能超过128个字符")
     @Schema(name = "字典备注")
     private String comment;
 

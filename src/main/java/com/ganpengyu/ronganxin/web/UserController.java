@@ -6,6 +6,7 @@ import com.ganpengyu.ronganxin.service.UserService;
 import com.ganpengyu.ronganxin.web.dto.user.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.StringToClassMapItem;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -32,7 +33,11 @@ public class UserController {
             @Parameter(name = "createUserDto", schema = @Schema(implementation = CreateUserDto.class))
     }, responses = {
             @ApiResponse(responseCode = "200",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = RaxResult.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(type = "RaxResult", properties = {
+                            @StringToClassMapItem(key = "success", value = Boolean.class),
+                            @StringToClassMapItem(key = "message", value = String.class),
+                            @StringToClassMapItem(key = "data", value = Boolean.class)
+                    })))
     })
     @PostMapping(value = "/create")
     public RaxResult<Boolean> createUser(@Valid @RequestBody CreateUserDto createUserDto) {
@@ -44,7 +49,11 @@ public class UserController {
             @Parameter(name = "updateUserDto", schema = @Schema(implementation = UpdateUserDto.class))
     }, responses = {
             @ApiResponse(responseCode = "200",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = RaxResult.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(type = "RaxResult", properties = {
+                            @StringToClassMapItem(key = "success", value = Boolean.class),
+                            @StringToClassMapItem(key = "message", value = String.class),
+                            @StringToClassMapItem(key = "data", value = Boolean.class)
+                    })))
     })
     @PostMapping(value = "/update")
     public RaxResult<Boolean> updateUser(@Valid @RequestBody UpdateUserDto updateUserDto) {
@@ -56,7 +65,11 @@ public class UserController {
             @Parameter(name = "id", description = "用户ID", required = true)
     }, responses = {
             @ApiResponse(responseCode = "200",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = RaxResult.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(type = "RaxResult", properties = {
+                            @StringToClassMapItem(key = "success", value = Boolean.class),
+                            @StringToClassMapItem(key = "message", value = String.class),
+                            @StringToClassMapItem(key = "data", value = Boolean.class)
+                    })))
     })
     @GetMapping(value = "/resetPassword/{id}")
     public RaxResult<Boolean> resetPassword(@PathVariable("id") Long id) {
@@ -68,7 +81,11 @@ public class UserController {
             @Parameter(name = "changePasswordDto", schema = @Schema(implementation = ChangePasswordDto.class))
     }, responses = {
             @ApiResponse(responseCode = "200",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = RaxResult.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(type = "RaxResult", properties = {
+                            @StringToClassMapItem(key = "success", value = Boolean.class),
+                            @StringToClassMapItem(key = "message", value = String.class),
+                            @StringToClassMapItem(key = "data", value = Boolean.class)
+                    })))
     })
     @PostMapping(value = "/changePassword")
     public RaxResult<Boolean> changePassword(@Valid @RequestBody ChangePasswordDto changePasswordDto) {
@@ -80,7 +97,11 @@ public class UserController {
             @Parameter(name = "id", description = "用户ID", required = true)
     }, responses = {
             @ApiResponse(responseCode = "200",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = RaxResult.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(type = "RaxResult", properties = {
+                            @StringToClassMapItem(key = "success", value = Boolean.class),
+                            @StringToClassMapItem(key = "message", value = String.class),
+                            @StringToClassMapItem(key = "data", value = Boolean.class)
+                    })))
     })
     @GetMapping(value = "/remove/{id}")
     public RaxResult<Boolean> removeUser(@PathVariable("id") Long id) {
@@ -90,6 +111,13 @@ public class UserController {
 
     @Operation(summary = "分页查询用户", parameters = {
             @Parameter(name = "queryUserDto", schema = @Schema(implementation = QueryUserDto.class))
+    }, responses = {
+            @ApiResponse(responseCode = "200",
+                    content = @Content(mediaType = "application/json", schema = @Schema(type = "RaxResult", properties = {
+                            @StringToClassMapItem(key = "success", value = Boolean.class),
+                            @StringToClassMapItem(key = "message", value = String.class),
+                            @StringToClassMapItem(key = "data", value = PageResult.class)
+                    })))
     })
     @PostMapping(value = "/page")
     public RaxResult<PageResult<SysUserDto>> findUserPage(@Valid @RequestBody QueryUserDto queryUserDto) {
@@ -101,7 +129,11 @@ public class UserController {
             @Parameter(name = "id", description = "用户ID", required = true)
     }, responses = {
             @ApiResponse(responseCode = "200",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = RaxResult.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(type = "RaxResult", properties = {
+                            @StringToClassMapItem(key = "success", value = Boolean.class),
+                            @StringToClassMapItem(key = "message", value = String.class),
+                            @StringToClassMapItem(key = "data", value = SysUserDto.class)
+                    })))
     })
     @GetMapping(value = "/get/{id}")
     public RaxResult<SysUserDto> findUserDtoById(@PathVariable("id") Long id) {

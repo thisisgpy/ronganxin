@@ -7,6 +7,7 @@ import com.ganpengyu.ronganxin.web.dto.org.SysOrgDto;
 import com.ganpengyu.ronganxin.web.dto.org.UpdateOrgDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.StringToClassMapItem;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -31,7 +32,11 @@ public class OrgController {
             @Parameter(name = "createOrgDto", schema = @Schema(implementation = CreateOrgDto.class))
     }, responses = {
             @ApiResponse(responseCode = "200",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = RaxResult.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(type = "RaxResult", properties = {
+                            @StringToClassMapItem(key = "success", value = Boolean.class),
+                            @StringToClassMapItem(key = "message", value = String.class),
+                            @StringToClassMapItem(key = "data", value = Boolean.class)
+                    })))
     })
     @PostMapping(value = "/create")
     public RaxResult<Boolean> createOrg(@Valid @RequestBody CreateOrgDto createOrgDto) {
@@ -43,7 +48,11 @@ public class OrgController {
             @Parameter(name = "updateOrgDto", schema = @Schema(implementation = UpdateOrgDto.class))
     }, responses = {
             @ApiResponse(responseCode = "200",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = RaxResult.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(type = "RaxResult", properties = {
+                            @StringToClassMapItem(key = "success", value = Boolean.class),
+                            @StringToClassMapItem(key = "message", value = String.class),
+                            @StringToClassMapItem(key = "data", value = Boolean.class)
+                    })))
     })
     @PostMapping(value = "/update")
     public RaxResult<Boolean> updateOrg(@Valid @RequestBody UpdateOrgDto updateOrgDto) {
@@ -55,7 +64,11 @@ public class OrgController {
             @Parameter(name = "id", description = "组织ID", required = true)
     }, responses = {
             @ApiResponse(responseCode = "200",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = RaxResult.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(type = "RaxResult", properties = {
+                            @StringToClassMapItem(key = "success", value = Boolean.class),
+                            @StringToClassMapItem(key = "message", value = String.class),
+                            @StringToClassMapItem(key = "data", value = Boolean.class)
+                    })))
     })
     @GetMapping(value = "/remove/{id}")
     public RaxResult<Boolean> removeOrg(@PathVariable("id") Long id) {
@@ -67,7 +80,11 @@ public class OrgController {
             @Parameter(name = "id", description = "组织ID", required = true)
     }, responses = {
             @ApiResponse(responseCode = "200",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = RaxResult.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(type = "RaxResult", properties = {
+                            @StringToClassMapItem(key = "success", value = Boolean.class),
+                            @StringToClassMapItem(key = "message", value = String.class),
+                            @StringToClassMapItem(key = "data", value = SysOrgDto.class)
+                    })))
     })
     @GetMapping(value = "/get/{id}")
     public RaxResult<SysOrgDto> findOrgDtoById(@PathVariable("id") Long id) {
@@ -77,7 +94,11 @@ public class OrgController {
 
     @Operation(summary = "获取组织树", responses = {
             @ApiResponse(responseCode = "200",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = RaxResult.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(type = "RaxResult", properties = {
+                            @StringToClassMapItem(key = "success", value = Boolean.class),
+                            @StringToClassMapItem(key = "message", value = String.class),
+                            @StringToClassMapItem(key = "data", value = SysOrgDto.class)
+                    })))
     })
     @GetMapping(value = "/tree")
     public RaxResult<SysOrgDto> findOrgTree() {

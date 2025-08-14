@@ -7,6 +7,7 @@ import com.ganpengyu.ronganxin.web.dto.resource.SysResourceDto;
 import com.ganpengyu.ronganxin.web.dto.resource.UpdateResourceDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.StringToClassMapItem;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -32,7 +33,11 @@ public class ResourceController {
             @Parameter(name = "createResourceDto", schema = @Schema(implementation = CreateResourceDto.class))
     }, responses = {
             @ApiResponse(responseCode = "200",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = RaxResult.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(type = "RaxResult", properties = {
+                            @StringToClassMapItem(key = "success", value = Boolean.class),
+                            @StringToClassMapItem(key = "message", value = String.class),
+                            @StringToClassMapItem(key = "data", value = Boolean.class)
+                    })))
     })
     @PostMapping(value = "/create")
     public RaxResult<Boolean> createResource(CreateResourceDto createResourceDto) {
@@ -44,7 +49,11 @@ public class ResourceController {
             @Parameter(name = "updateResourceDto", schema = @Schema(implementation = UpdateResourceDto.class))
     }, responses = {
             @ApiResponse(responseCode = "200",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = RaxResult.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(type = "RaxResult", properties = {
+                            @StringToClassMapItem(key = "success", value = Boolean.class),
+                            @StringToClassMapItem(key = "message", value = String.class),
+                            @StringToClassMapItem(key = "data", value = Boolean.class)
+                    })))
     })
     @PostMapping(value = "/update")
     public RaxResult<Boolean> updateResource(UpdateResourceDto updateResourceDto) {
@@ -56,7 +65,11 @@ public class ResourceController {
             @Parameter(name = "id", description = "资源ID", required = true)
     }, responses = {
             @ApiResponse(responseCode = "200",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = RaxResult.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(type = "RaxResult", properties = {
+                            @StringToClassMapItem(key = "success", value = Boolean.class),
+                            @StringToClassMapItem(key = "message", value = String.class),
+                            @StringToClassMapItem(key = "data", value = Boolean.class)
+                    })))
     })
     @GetMapping(value = "/remove/{id}")
     public RaxResult<Boolean> removeResource(@PathVariable("id") Long id) {
@@ -68,7 +81,11 @@ public class ResourceController {
             @Parameter(name = "id", description = "资源ID", required = true)
     }, responses = {
             @ApiResponse(responseCode = "200",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = RaxResult.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(type = "RaxResult", properties = {
+                            @StringToClassMapItem(key = "success", value = Boolean.class),
+                            @StringToClassMapItem(key = "message", value = String.class),
+                            @StringToClassMapItem(key = "data", value = SysResourceDto.class)
+                    })))
     })
     @GetMapping(value = "/get/{id}")
     public RaxResult<SysResourceDto> getResource(@PathVariable("id") Long id) {
@@ -80,7 +97,11 @@ public class ResourceController {
             @Parameter(name = "parentId", description = "父级资源ID", required = true)
     }, responses = {
             @ApiResponse(responseCode = "200",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = RaxResult.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(type = "RaxResult", properties = {
+                            @StringToClassMapItem(key = "success", value = Boolean.class),
+                            @StringToClassMapItem(key = "message", value = String.class),
+                            @StringToClassMapItem(key = "data", value = List.class)
+                    })))
     })
     @GetMapping(value = "/children/{parentId}")
     public RaxResult<List<SysResourceDto>> findChildren(@PathVariable("parentId") Long parentId) {
@@ -90,7 +111,11 @@ public class ResourceController {
 
     @Operation(summary = "获取资源树", responses = {
             @ApiResponse(responseCode = "200",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = RaxResult.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(type = "RaxResult", properties = {
+                            @StringToClassMapItem(key = "success", value = Boolean.class),
+                            @StringToClassMapItem(key = "message", value = String.class),
+                            @StringToClassMapItem(key = "data", value = List.class)
+                    })))
     })
     @GetMapping(value = "/trees")
     public RaxResult<List<SysResourceDto>> findResourceTree() {
@@ -102,7 +127,11 @@ public class ResourceController {
             @Parameter(name = "roleId", description = "角色ID", required = true)
     }, responses = {
             @ApiResponse(responseCode = "200",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = RaxResult.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(type = "RaxResult", properties = {
+                            @StringToClassMapItem(key = "success", value = Boolean.class),
+                            @StringToClassMapItem(key = "message", value = String.class),
+                            @StringToClassMapItem(key = "data", value = List.class)
+                    })))
     })
     @GetMapping(value = "/getResource/{roleId}")
     public RaxResult<List<SysResourceDto>> getResourceByRoleId(@PathVariable("roleId") Long roleId) {
@@ -114,7 +143,11 @@ public class ResourceController {
             @Parameter(name = "userId", description = "用户ID", required = true)
     }, responses = {
             @ApiResponse(responseCode = "200",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = RaxResult.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(type = "RaxResult", properties = {
+                            @StringToClassMapItem(key = "success", value = Boolean.class),
+                            @StringToClassMapItem(key = "message", value = String.class),
+                            @StringToClassMapItem(key = "data", value = List.class)
+                    })))
     })
     @GetMapping(value = "/getMenu/{userId}")
     public RaxResult<List<SysResourceDto>> getMenu(@PathVariable("userId") Long userId) {

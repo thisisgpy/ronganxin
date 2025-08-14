@@ -9,6 +9,7 @@ import com.ganpengyu.ronganxin.web.dto.role.SysRoleDto;
 import com.ganpengyu.ronganxin.web.dto.role.UpdateRoleDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.StringToClassMapItem;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -35,7 +36,11 @@ public class RoleController {
             @Parameter(name = "createRoleDto", schema = @Schema(implementation = CreateRoleDto.class))
     }, responses = {
             @ApiResponse(responseCode = "200",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = RaxResult.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(type = "RaxResult", properties = {
+                            @StringToClassMapItem(key = "success", value = Boolean.class),
+                            @StringToClassMapItem(key = "message", value = String.class),
+                            @StringToClassMapItem(key = "data", value = Boolean.class)
+                    })))
     })
     @PostMapping(value = "/create")
     public RaxResult<Boolean> createRole(CreateRoleDto createRoleDto) {
@@ -47,7 +52,11 @@ public class RoleController {
             @Parameter(name = "updateRoleDto", schema = @Schema(implementation = UpdateRoleDto.class))
     }, responses = {
             @ApiResponse(responseCode = "200",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = RaxResult.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(type = "RaxResult", properties = {
+                            @StringToClassMapItem(key = "success", value = Boolean.class),
+                            @StringToClassMapItem(key = "message", value = String.class),
+                            @StringToClassMapItem(key = "data", value = Boolean.class)
+                    })))
     })
     @PostMapping(value = "/update")
     public RaxResult<Boolean> updateRole(UpdateRoleDto updateRoleDto) {
@@ -59,7 +68,11 @@ public class RoleController {
             @Parameter(name = "id", description = "角色ID", required = true)
     }, responses = {
             @ApiResponse(responseCode = "200",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = RaxResult.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(type = "RaxResult", properties = {
+                            @StringToClassMapItem(key = "success", value = Boolean.class),
+                            @StringToClassMapItem(key = "message", value = String.class),
+                            @StringToClassMapItem(key = "data", value = Boolean.class)
+                    })))
     })
     @GetMapping(value = "/remove/{id}")
     public RaxResult<Boolean> removeRole(@PathVariable("id") Long id) {
@@ -71,7 +84,11 @@ public class RoleController {
             @Parameter(name = "id", description = "角色ID", required = true)
     }, responses = {
             @ApiResponse(responseCode = "200",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = RaxResult.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(type = "RaxResult", properties = {
+                            @StringToClassMapItem(key = "success", value = Boolean.class),
+                            @StringToClassMapItem(key = "message", value = String.class),
+                            @StringToClassMapItem(key = "data", value = SysRoleDto.class)
+                    })))
     })
     @GetMapping(value = "/get/{id}")
     public RaxResult<SysRoleDto> findRoleDtoById(@PathVariable("id") Long id) {
@@ -82,7 +99,11 @@ public class RoleController {
     @Operation(summary = "获取角色列表",
             responses = {
                     @ApiResponse(responseCode = "200",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = RaxResult.class)))
+                            content = @Content(mediaType = "application/json", schema = @Schema(type = "RaxResult", properties = {
+                                    @StringToClassMapItem(key = "success", value = Boolean.class),
+                                    @StringToClassMapItem(key = "message", value = String.class),
+                                    @StringToClassMapItem(key = "data", value = List.class)
+                            })))
             })
     @GetMapping(value = "/list")
     public RaxResult<List<SysRoleDto>> findRoleDtoList() {
@@ -94,7 +115,11 @@ public class RoleController {
             @Parameter(name = "queryRoleDto", schema = @Schema(implementation = QueryRoleDto.class))
     }, responses = {
             @ApiResponse(responseCode = "200",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = RaxResult.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(type = "RaxResult", properties = {
+                            @StringToClassMapItem(key = "success", value = Boolean.class),
+                            @StringToClassMapItem(key = "message", value = String.class),
+                            @StringToClassMapItem(key = "data", value = PageResult.class)
+                    })))
     })
     @PostMapping(value = "/page")
     public RaxResult<PageResult<SysRoleDto>> findRoleDtoPage(@Valid @RequestBody QueryRoleDto queryRoleDto) {
@@ -106,7 +131,11 @@ public class RoleController {
             @Parameter(name = "userId", description = "用户ID", required = true)
     }, responses = {
             @ApiResponse(responseCode = "200",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = RaxResult.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(type = "RaxResult", properties = {
+                            @StringToClassMapItem(key = "success", value = Boolean.class),
+                            @StringToClassMapItem(key = "message", value = String.class),
+                            @StringToClassMapItem(key = "data", value = List.class)
+                    })))
     })
     @GetMapping(value = "/getRole/{userId}")
     public RaxResult<List<SysRoleDto>> getRole(@PathVariable("userId") Long userId) {

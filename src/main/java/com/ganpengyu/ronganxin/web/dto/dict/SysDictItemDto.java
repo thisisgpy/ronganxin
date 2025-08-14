@@ -3,6 +3,8 @@ package com.ganpengyu.ronganxin.web.dto.dict;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @author Pengyu Gan
  * CreateDate 2025/8/13
@@ -37,5 +39,8 @@ public class SysDictItemDto {
 
     @Schema(name = "是否启用")
     private Boolean isEnabled;
+
+    @Schema(name = "子级字典项")
+    private List<SysDictItemDto> children;
 
 }

@@ -8,6 +8,7 @@ import com.ganpengyu.ronganxin.web.dto.auth.UserLoginDto;
 import com.ganpengyu.ronganxin.web.dto.user.LoginUserDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.StringToClassMapItem;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -31,7 +32,11 @@ public class AuthController {
             @Parameter(name = "userLoginDto", schema = @Schema(implementation = UserLoginDto.class))
     }, responses = {
             @ApiResponse(responseCode = "200",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = RaxResult.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(type = "RaxResult", properties = {
+                            @StringToClassMapItem(key = "success", value = Boolean.class),
+                            @StringToClassMapItem(key = "message", value = String.class),
+                            @StringToClassMapItem(key = "data", value = LoginUserDto.class)
+                    })))
     })
     @PostMapping("/login")
     public RaxResult<LoginUserDto> login(@RequestBody @Valid UserLoginDto userLoginDto) {
@@ -42,7 +47,11 @@ public class AuthController {
             @Parameter(name = "userId", schema = @Schema(implementation = Long.class))
     }, responses = {
             @ApiResponse(responseCode = "200",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = RaxResult.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(type = "RaxResult", properties = {
+                            @StringToClassMapItem(key = "success", value = Boolean.class),
+                            @StringToClassMapItem(key = "message", value = String.class),
+                            @StringToClassMapItem(key = "data", value = Boolean.class)
+                    })))
     })
     @GetMapping("/logout/{userId}")
     public RaxResult<Boolean> logout(@PathVariable("userId") Long userId) {
@@ -54,7 +63,11 @@ public class AuthController {
             @Parameter(name = "assignUserRoleDto", schema = @Schema(implementation = AssignUserRoleDto.class))
     }, responses = {
             @ApiResponse(responseCode = "200",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = RaxResult.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(type = "RaxResult", properties = {
+                            @StringToClassMapItem(key = "success", value = Boolean.class),
+                            @StringToClassMapItem(key = "message", value = String.class),
+                            @StringToClassMapItem(key = "data", value = Boolean.class)
+                    })))
     })
     @PostMapping("/assignUserRole")
     public RaxResult<Boolean> assignUserRole(@RequestBody @Valid AssignUserRoleDto assignUserRoleDto) {
@@ -66,7 +79,11 @@ public class AuthController {
             @Parameter(name = "assignRoleResourceDto", schema = @Schema(implementation = AssignRoleResourceDto.class))
     }, responses = {
             @ApiResponse(responseCode = "200",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = RaxResult.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(type = "RaxResult", properties = {
+                            @StringToClassMapItem(key = "success", value = Boolean.class),
+                            @StringToClassMapItem(key = "message", value = String.class),
+                            @StringToClassMapItem(key = "data", value = Boolean.class)
+                    })))
     })
     @PostMapping("/assignRoleResource")
     public RaxResult<Boolean> assignRoleResource(@RequestBody @Valid AssignRoleResourceDto assignRoleResourceDto) {
@@ -79,7 +96,11 @@ public class AuthController {
             @Parameter(name = "resourceCode", schema = @Schema(implementation = String.class))
     }, responses = {
             @ApiResponse(responseCode = "200",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = RaxResult.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(type = "RaxResult", properties = {
+                            @StringToClassMapItem(key = "success", value = Boolean.class),
+                            @StringToClassMapItem(key = "message", value = String.class),
+                            @StringToClassMapItem(key = "data", value = Boolean.class)
+                    })))
     })
     @GetMapping("/hasPermission/{userId}/{resourceCode}")
     public RaxResult<Boolean> hasPermission(@PathVariable("userId") Long userId, @PathVariable("resourceCode") String resourceCode) {
