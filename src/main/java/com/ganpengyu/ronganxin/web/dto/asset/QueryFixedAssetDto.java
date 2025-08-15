@@ -21,9 +21,6 @@ public class QueryFixedAssetDto extends PageQueryDto {
     @Schema(name = "固定资产地址")
     private String address;
 
-    @Schema(name = "固定资产账面价值")
-    private Long bookValue;
-
     @Schema(name = "所属组织ID")
     private Long orgId;
 

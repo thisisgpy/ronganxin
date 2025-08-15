@@ -1,8 +1,9 @@
 package com.ganpengyu.ronganxin.beanmapper;
 
-import com.ganpengyu.ronganxin.model.AssetFixed;
+import com.ganpengyu.ronganxin.model.FixedAsset;
 import com.ganpengyu.ronganxin.web.dto.asset.CreateFixedAssetDto;
 import com.ganpengyu.ronganxin.web.dto.asset.FixedAssetDto;
+import com.ganpengyu.ronganxin.web.dto.asset.UpdateFixedAssetDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.MappingTarget;
@@ -18,12 +19,12 @@ import java.util.List;
         componentModel = MappingConstants.ComponentModel.SPRING)
 public interface FixedAssetBeanMapper {
 
-    AssetFixed toAssetFixed(CreateFixedAssetDto createFixedAssetDto);
+    FixedAsset toFixedAsset(CreateFixedAssetDto createFixedAssetDto);
 
-    FixedAssetDto toFixedAssetDto(AssetFixed assetFixed);
+    FixedAssetDto toFixedAssetDto(FixedAsset fixedAsset);
 
-    void updateAssetFixed(CreateFixedAssetDto createFixedAssetDto, @MappingTarget AssetFixed assetFixed);
+    void updateFixedAsset(UpdateFixedAssetDto updateFixedAssetDto, @MappingTarget FixedAsset fixedAsset);
 
-    List<FixedAssetDto> toFixedAssetDtoList(List<AssetFixed> assetFixedList);
+    List<FixedAssetDto> toFixedAssetDtoList(List<FixedAsset> fixedAssetList);
 
 }

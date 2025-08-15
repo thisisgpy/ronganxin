@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Table(value = "asset_fixed")
-public class AssetFixed {
+public class FixedAsset {
 
     /**
      * 固定资产ID
